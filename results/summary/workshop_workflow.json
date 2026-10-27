@@ -1,0 +1,665 @@
+{
+  "scenarios": [
+    {
+      "id": "ws-a1-vague-clarify",
+      "title": "모호한 문의 -> clarification loop",
+      "question": "카드가 안 긁히는데 어떻게 해야 하나요?",
+      "expected_path": "D1 -> D2 -> D5(need_clarification) -> 질문/답변 -> D5 -> D3 -> D6(goal_met) -> 요약 -> D7(no_risk) -> D4",
+      "runs": {
+        "A_haiku": {
+          "arm": "A_haiku",
+          "timeline": [
+            {
+              "node": "guardrail_check",
+              "kind": "decision",
+              "label": "in_scope",
+              "confidence": null,
+              "latency_ms": 637.6
+            },
+            {
+              "node": "intent_router",
+              "kind": "decision",
+              "label": "cards",
+              "confidence": null,
+              "latency_ms": 615.0
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "need_clarification",
+              "confidence": null,
+              "latency_ms": 647.6
+            },
+            {
+              "node": "ask_clarify",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 2587.3
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "info_sufficient",
+              "confidence": null,
+              "latency_ms": 1031.9
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "card_troubleshoot",
+              "confidence": null,
+              "latency_ms": 675.9
+            },
+            {
+              "node": "tool:card_troubleshoot",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "goal_met",
+              "confidence": null,
+              "latency_ms": 609.1
+            },
+            {
+              "node": "summarize",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 2890.1
+            },
+            {
+              "node": "risk_check",
+              "kind": "decision",
+              "label": "no_risk",
+              "confidence": null,
+              "latency_ms": 611.8
+            },
+            {
+              "node": "escalation_gate",
+              "kind": "decision",
+              "label": "resolve",
+              "confidence": null,
+              "latency_ms": 644.0
+            },
+            {
+              "node": "respond",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 4966.0
+            }
+          ],
+          "dialogue": [
+            {
+              "role": "customer",
+              "text": "카드가 안 긁히는데 어떻게 해야 하나요?"
+            },
+            {
+              "role": "agent",
+              "text": "어떤 카드가 안 되시나요? (체크카드인지 신용카드인지, 그리고 카드 끝 4자리 번호를 알려주시겠어요?)"
+            },
+            {
+              "role": "customer",
+              "text": "어제부터 오프라인 매장 단말기에서만 승인이 거절돼요. 관련 정보: Visa 체크카드(끝자리 7712), 마지막 시도 2026-10-27 TechMart 강남점, 금액 45,000원입니다."
+            }
+          ],
+          "n_decisions": 8,
+          "decision_ms": 5472.9,
+          "llm_ms": 10443.4,
+          "e2e_ms": 15922.8,
+          "final_response": "고객님, 확인 결과 Visa 체크카드(끝자리 7712)의 오프라인 단말기 결제 문제가 해결되었습니다.\n\n이제 오프라인 매장에서 정상적으로 카드를 사용하실 수 있습니다. TechMart 강남점 등 오프라인 매장 단말기에서 다시 시도해 주시기 바랍니다.\n\n만약 여전히 결제가 되지 않는 경우, 즉시 고객센터(1588-xxxx)로 연락 주시면 추가 지원해 드리겠습니다.\n\n처리 참조번호: REF-ws-a1-vague-clarify-A_haiku\n\n불편을 드려 죄송하며, 도움이 되셨기를 바랍니다.",
+          "bedrock_cost_usd": 0.012001
+        },
+        "B_sglang": {
+          "arm": "B_sglang",
+          "timeline": [
+            {
+              "node": "guardrail_check",
+              "kind": "decision",
+              "label": "in_scope",
+              "confidence": 0.9999748994941249,
+              "latency_ms": 36.0
+            },
+            {
+              "node": "intent_router",
+              "kind": "decision",
+              "label": "cards",
+              "confidence": 0.9999764189496748,
+              "latency_ms": 34.0
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "need_clarification",
+              "confidence": 0.999999969540041,
+              "latency_ms": 33.5
+            },
+            {
+              "node": "ask_clarify",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 2573.2
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "info_sufficient",
+              "confidence": 0.9999999355162674,
+              "latency_ms": 38.2
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "card_troubleshoot",
+              "confidence": 0.9999999995725474,
+              "latency_ms": 35.6
+            },
+            {
+              "node": "tool:card_troubleshoot",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "goal_met",
+              "confidence": 0.9999923635065777,
+              "latency_ms": 33.9
+            },
+            {
+              "node": "summarize",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 4457.0
+            },
+            {
+              "node": "risk_check",
+              "kind": "decision",
+              "label": "no_risk",
+              "confidence": 0.999999998483488,
+              "latency_ms": 37.6
+            },
+            {
+              "node": "escalation_gate",
+              "kind": "decision",
+              "label": "resolve",
+              "confidence": 0.9999999998334366,
+              "latency_ms": 35.0
+            },
+            {
+              "node": "respond",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 6403.0
+            }
+          ],
+          "dialogue": [
+            {
+              "role": "customer",
+              "text": "카드가 안 긁히는데 어떻게 해야 하나요?"
+            },
+            {
+              "role": "agent",
+              "text": "어떤 카드가 안 긁히시나요? 체크카드인가요, 신용카드인가요? 카드 번호 뒷 4자리를 알려주시겠어요?"
+            },
+            {
+              "role": "customer",
+              "text": "어제부터 오프라인 매장 단말기에서만 승인이 거절돼요. 관련 정보: Visa 체크카드(끝자리 7712), 마지막 시도 2026-10-27 TechMart 강남점, 금액 45,000원입니다."
+            }
+          ],
+          "n_decisions": 8,
+          "decision_ms": 283.7,
+          "llm_ms": 13433.3,
+          "e2e_ms": 13723.3,
+          "final_response": "고객님, 확인해 드렸습니다.\n\nVisa 체크카드(끝자리 7712)에 대한 시스템 점검 결과, 카드 상태는 정상으로 확인되었습니다. 오프라인 단말기 승인 관련 문제를 해결했습니다.\n\n**다음 단계:**\n1. 카드 마그네틱 띠를 깨끗한 천으로 닦아주세요\n2. IC칩이 있다면 IC칩 삽입 방식으로 시도해 보세요\n3. 다른 매장에서 재시도해 주세요\n\n문제가 지속되면 카드 재발급이 필요할 수 있습니다. 추가 도움이 필요하시면 언제든지 문의해 주세요.\n\n**참조번호: REF-ws-a1-vague-clarify-B_sglang**",
+          "bedrock_cost_usd": 0.010938
+        }
+      }
+    },
+    {
+      "id": "ws-a2-retry-loop",
+      "title": "시스템 오류 -> tool retry loop",
+      "question": "어제 오후에 보낸 해외송금이 아직 수취인에게 도착하지 않았어요. 송금 번호는 TR-20261026-8841, 금액은 USD 2,000입니다. 확인해 주세요.",
+      "expected_path": "D1 -> D2 -> D5 -> D3 -> tool_error -> D6(try_alternative) -> D3(대체 tool) -> D6(goal_met) -> 요약 -> D7 -> D4",
+      "runs": {
+        "A_haiku": {
+          "arm": "A_haiku",
+          "timeline": [
+            {
+              "node": "guardrail_check",
+              "kind": "decision",
+              "label": "in_scope",
+              "confidence": null,
+              "latency_ms": 648.3
+            },
+            {
+              "node": "intent_router",
+              "kind": "decision",
+              "label": "transfers",
+              "confidence": null,
+              "latency_ms": 625.2
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "info_sufficient",
+              "confidence": null,
+              "latency_ms": 607.8
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "track_transfer",
+              "confidence": null,
+              "latency_ms": 662.0
+            },
+            {
+              "node": "tool:track_transfer",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "try_alternative",
+              "confidence": null,
+              "latency_ms": 719.9
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "transfer_info",
+              "confidence": null,
+              "latency_ms": 594.7
+            },
+            {
+              "node": "tool:transfer_info",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "goal_met",
+              "confidence": null,
+              "latency_ms": 619.6
+            },
+            {
+              "node": "summarize",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 5126.1
+            },
+            {
+              "node": "risk_check",
+              "kind": "decision",
+              "label": "no_risk",
+              "confidence": null,
+              "latency_ms": 608.9
+            },
+            {
+              "node": "escalation_gate",
+              "kind": "decision",
+              "label": "human_handoff",
+              "confidence": null,
+              "latency_ms": 703.5
+            },
+            {
+              "node": "respond",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 5666.1
+            }
+          ],
+          "dialogue": [
+            {
+              "role": "customer",
+              "text": "어제 오후에 보낸 해외송금이 아직 수취인에게 도착하지 않았어요. 송금 번호는 TR-20261026-8841, 금액은 USD 2,000입니다. 확인해 주세요."
+            }
+          ],
+          "n_decisions": 9,
+          "decision_ms": 5789.8,
+          "llm_ms": 10792.2,
+          "e2e_ms": 16588.1,
+          "final_response": "고객님, 안녕하세요.\n\n해외송금 건(TR-20261026-8841, USD 2,000)에 대해 문의 주셔서 감사합니다. \n\n현재 시스템에서 자세한 송금 상태 정보를 확인할 수 없어, 고객님의 케이스를 전문 상담원에게 연결해 드렸습니다. 해외송금 전문팀에서 송금 처리 상태와 수취인 도착 여부를 정확히 확인하여 영업일 기준 1-2일 내에 연락드릴 예정입니다.\n\n송금 번호와 금액 정보는 이미 전달되었으니, 추가 확인이 필요하시면 고객센터(1588-xxxx)로 송금 번호를 말씀해 주시기 바랍니다.\n\n불편을 드려 죄송합니다.",
+          "bedrock_cost_usd": 0.011702
+        },
+        "B_sglang": {
+          "arm": "B_sglang",
+          "timeline": [
+            {
+              "node": "guardrail_check",
+              "kind": "decision",
+              "label": "in_scope",
+              "confidence": 0.9999994024162979,
+              "latency_ms": 36.8
+            },
+            {
+              "node": "intent_router",
+              "kind": "decision",
+              "label": "transfers",
+              "confidence": 0.9999999999423408,
+              "latency_ms": 34.1
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "info_sufficient",
+              "confidence": 0.9999999887944071,
+              "latency_ms": 33.6
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "track_transfer",
+              "confidence": 0.9999999994276516,
+              "latency_ms": 33.3
+            },
+            {
+              "node": "tool:track_transfer",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "try_alternative",
+              "confidence": 0.9999999985378598,
+              "latency_ms": 33.4
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "transfer_info",
+              "confidence": 0.9999998936843006,
+              "latency_ms": 33.2
+            },
+            {
+              "node": "tool:transfer_info",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "goal_met",
+              "confidence": 0.9096847432195143,
+              "latency_ms": 33.3
+            },
+            {
+              "node": "summarize",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 4574.4
+            },
+            {
+              "node": "risk_check",
+              "kind": "decision",
+              "label": "no_risk",
+              "confidence": 0.9999999958776928,
+              "latency_ms": 37.9
+            },
+            {
+              "node": "escalation_gate",
+              "kind": "decision",
+              "label": "human_handoff",
+              "confidence": 0.5187680390212766,
+              "latency_ms": 35.1
+            },
+            {
+              "node": "respond",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 5139.6
+            }
+          ],
+          "dialogue": [
+            {
+              "role": "customer",
+              "text": "어제 오후에 보낸 해외송금이 아직 수취인에게 도착하지 않았어요. 송금 번호는 TR-20261026-8841, 금액은 USD 2,000입니다. 확인해 주세요."
+            }
+          ],
+          "n_decisions": 9,
+          "decision_ms": 310.5,
+          "llm_ms": 9714.0,
+          "e2e_ms": 10030.3,
+          "final_response": "고객님, 안녕하세요.\n\n송금번호 TR-20261026-8841 (USD 2,000) 건에 대해 확인이 필요한 사항이 있어, 해외송금 전문 상담원에게 케이스를 전달했습니다.\n\n전문 상담원이 다음 사항을 정확히 확인하여 연락드릴 예정입니다:\n- 현재 송금 처리 단계\n- 수취인 도착 예상 시간\n- 지연 사유 (해당시)\n\n영업일 기준 1일 이내에 등록하신 연락처로 안내해 드리겠습니다. \n\n불편을 드려 죄송하며, 신속히 처리하도록 하겠습니다.\n\n감사합니다.",
+          "bedrock_cost_usd": 0.007671
+        }
+      }
+    },
+    {
+      "id": "ws-a3-risk-kyc",
+      "title": "이상거래 -> risk verification sub-flow (KYC)",
+      "question": "카드 끝자리 7712로 해외 결제(USD 1,284, LUXE GADGETS) 승인이 됐다는 알림을 받았는데, 이 거래를 확인하고 싶어요.",
+      "expected_path": "D1 -> D2 -> D5 -> D3 -> D6(goal_met) -> 요약 -> D7(needs_verification) -> KYC tool -> D8(verified) -> D4",
+      "runs": {
+        "A_haiku": {
+          "arm": "A_haiku",
+          "timeline": [
+            {
+              "node": "guardrail_check",
+              "kind": "decision",
+              "label": "in_scope",
+              "confidence": null,
+              "latency_ms": 648.3
+            },
+            {
+              "node": "intent_router",
+              "kind": "decision",
+              "label": "cards",
+              "confidence": null,
+              "latency_ms": 629.6
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "info_sufficient",
+              "confidence": null,
+              "latency_ms": 656.7
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "card_troubleshoot",
+              "confidence": null,
+              "latency_ms": 585.8
+            },
+            {
+              "node": "tool:card_troubleshoot",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "goal_met",
+              "confidence": null,
+              "latency_ms": 633.1
+            },
+            {
+              "node": "summarize",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 4530.3
+            },
+            {
+              "node": "risk_check",
+              "kind": "decision",
+              "label": "needs_verification",
+              "confidence": null,
+              "latency_ms": 699.3
+            },
+            {
+              "node": "tool:run_kyc_check",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "kyc_review",
+              "kind": "decision",
+              "label": "verified",
+              "confidence": null,
+              "latency_ms": 637.1
+            },
+            {
+              "node": "escalation_gate",
+              "kind": "decision",
+              "label": "human_handoff",
+              "confidence": null,
+              "latency_ms": 681.4
+            },
+            {
+              "node": "respond",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 6491.2
+            }
+          ],
+          "dialogue": [
+            {
+              "role": "customer",
+              "text": "카드 끝자리 7712로 해외 결제(USD 1,284, LUXE GADGETS) 승인이 됐다는 알림을 받았는데, 이 거래를 확인하고 싶어요."
+            }
+          ],
+          "n_decisions": 8,
+          "decision_ms": 5171.3,
+          "llm_ms": 11021.5,
+          "e2e_ms": 16198.8,
+          "final_response": "고객님, 안녕하세요.\n\n카드 끝자리 7712번으로 발생한 USD 1,284 LUXE GADGETS 거래 건에 대해 문의 주셔서 감사합니다.\n\n해당 거래는 비정상적인 패턴(지역 또는 금액)으로 인해 당행의 부정거래 모니터링 시스템에 의해 플래그가 지정되었습니다. 고객님의 안전한 금융거래를 위해 추가 보안 검토가 필요한 상황입니다.\n\n전문 상담사가 본인 확인 및 거래 승인 여부를 확인한 후 적절한 조치를 안내해 드리겠습니다. 영업일 기준 1-2일 내에 연락드릴 예정이며, 긴급하신 경우 고객센터(1588-XXXX)로 연락 주시기 바랍니다.\n\n참조번호: REF-ws-a3-risk-kyc-A_haiku\n\n감사합니다.",
+          "bedrock_cost_usd": 0.012167
+        },
+        "B_sglang": {
+          "arm": "B_sglang",
+          "timeline": [
+            {
+              "node": "guardrail_check",
+              "kind": "decision",
+              "label": "in_scope",
+              "confidence": 0.9098581728835213,
+              "latency_ms": 36.5
+            },
+            {
+              "node": "intent_router",
+              "kind": "decision",
+              "label": "card_security",
+              "confidence": 0.9906237909172293,
+              "latency_ms": 34.8
+            },
+            {
+              "node": "clarify_gate",
+              "kind": "decision",
+              "label": "info_sufficient",
+              "confidence": 0.9999987048108667,
+              "latency_ms": 33.5
+            },
+            {
+              "node": "tool_select",
+              "kind": "decision",
+              "label": "freeze_card",
+              "confidence": 0.9992668025967824,
+              "latency_ms": 33.2
+            },
+            {
+              "node": "tool:freeze_card",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "tool_review",
+              "kind": "decision",
+              "label": "goal_met",
+              "confidence": 0.999485148876387,
+              "latency_ms": 34.6
+            },
+            {
+              "node": "summarize",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 3831.1
+            },
+            {
+              "node": "risk_check",
+              "kind": "decision",
+              "label": "needs_verification",
+              "confidence": 0.9999999997364699,
+              "latency_ms": 38.5
+            },
+            {
+              "node": "tool:run_kyc_check",
+              "kind": "tool",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 0.0
+            },
+            {
+              "node": "kyc_review",
+              "kind": "decision",
+              "label": "verified",
+              "confidence": 0.9999999999411986,
+              "latency_ms": 36.3
+            },
+            {
+              "node": "escalation_gate",
+              "kind": "decision",
+              "label": "human_handoff",
+              "confidence": 0.8468437693173605,
+              "latency_ms": 35.4
+            },
+            {
+              "node": "respond",
+              "kind": "llm",
+              "label": null,
+              "confidence": null,
+              "latency_ms": 6411.4
+            }
+          ],
+          "dialogue": [
+            {
+              "role": "customer",
+              "text": "카드 끝자리 7712로 해외 결제(USD 1,284, LUXE GADGETS) 승인이 됐다는 알림을 받았는데, 이 거래를 확인하고 싶어요."
+            }
+          ],
+          "n_decisions": 8,
+          "decision_ms": 282.8,
+          "llm_ms": 10242.5,
+          "e2e_ms": 10531.0,
+          "final_response": "안녕하세요,\n\n고객님의 카드 보안을 위해 7712 카드를 임시 정지 조치하였습니다. USD 1,284 LUXE GADGETS 거래는 비정상적인 패턴(지역 또는 금액)으로 인해 사기 방지 모니터링 시스템에서 감지되었습니다.\n\n거래 내역에 대한 정확한 확인과 필요 시 이의제기 처리를 위해 사기 방지 전문팀으로 사안을 상담 연결해 드렸습니다. 전문 상담원이 24시간 내에 연락드려 상세한 거래 검토 및 카드 정지 해제 절차를 안내해 드릴 예정입니다.\n\n참조번호: REF-ws-a3-risk-kyc-B_sglang\n\n불편을 드려 죄송하며, 신속히 도와드리겠습니다.\n\n감사합니다.",
+          "bedrock_cost_usd": 0.00891
+        }
+      }
+    }
+  ],
+  "session_spend_usd": 9.2126
+}
