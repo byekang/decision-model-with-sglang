@@ -16,6 +16,7 @@ Usage: /data/venvs/agent/bin/python scripts/93_workshop_demo.py [--reps 10]
 """
 
 import argparse
+import os
 import base64
 import json
 import re
@@ -40,7 +41,7 @@ WARMUP = 2
 IMG_DIR = DATA_DIR / "workshop"
 SPEND_FILE = RAW_DIR.parent / "bedrock_spend.json"
 SGLANG_MODEL = "Qwen/Qwen3-VL-8B-Instruct"
-CHAT_URL = "http://localhost:8001/v1/chat/completions"
+CHAT_URL = f"http://{os.environ.get('SGLANG_HOST', 'localhost')}:8001/v1/chat/completions"
 
 VLM_PROMPT = ('위 이미지를 보고 다음 질문에 답하라. {question}\n'
               '아래 Labels 중 정확히 하나를 골라 {{"label": "<label>"}} JSON 객체로만 '

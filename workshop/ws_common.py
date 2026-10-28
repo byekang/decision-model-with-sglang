@@ -10,6 +10,7 @@
 
 import base64
 import json
+import os
 import re
 import statistics
 import sys
@@ -17,9 +18,14 @@ import time
 import urllib.request
 from pathlib import Path
 
-ROOT = Path("/home/ubuntu/LLMRouter/OpenSource")
+# 프로젝트 루트: DMWS_ROOT 환경변수 > 이 파일 기준 상위 폴더 (repo clone 위치 무관)
+ROOT = Path(os.environ.get("DMWS_ROOT", Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
+
+# 모델 서버 호스트: SGLANG_HOST 환경변수 > localhost
+# (workshop에서는 SGLang(:8001)과 strands-decider(:8002)가 같은 GPU EC2에서 서빙됨)
+SERVER_HOST = os.environ.get("SGLANG_HOST", "localhost")
 
 from common import BEDROCK_MODEL_IDS, PRICING                      # noqa: E402
 from agent.bedrock_llm import BedrockLLM                           # noqa: E402
@@ -354,7 +360,7 @@ def vlm_sglang(img: Path, q: str, labels):
             {"type": "text", "text": VLM_PROMPT.format(
                 q=q, labels="\n".join(f"- {l}" for l in labels))}]}]},
         ensure_ascii=False).encode()
-    req = urllib.request.Request("http://localhost:8001/v1/chat/completions",
+    req = urllib.request.Request(f"http://{SERVER_HOST}:8001/v1/chat/completions",
                                  data=body,
                                  headers={"Content-Type": "application/json"})
     t0 = time.perf_counter()

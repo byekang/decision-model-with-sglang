@@ -31,7 +31,8 @@ LangGraph로 만든 한국어 금융 상담 agent의 **판단(decision) 계층**
 
 이 저장소는 아래 환경을 전제로 작성되었습니다 (경로가 코드에 포함되어 있음):
 
-- 프로젝트 루트: `/home/ubuntu/LLMRouter/OpenSource` 에 clone (다른 경로 사용 시 `workshop/ws_common.py`의 `ROOT`와 노트북 첫 셀의 `sys.path` 경로 수정)
+- 프로젝트 루트: clone 위치 무관 (`workshop/ws_common.py`가 자기 위치 기준으로 자동 탐지, 필요 시 `DMWS_ROOT` 환경변수로 지정)
+- 모델 서버 주소: 기본 `localhost`, 원격 서버 사용 시 `SGLANG_HOST` 환경변수에 서버 IP 지정 (SGLang :8001, strands-decider :8002 공통)
 - GPU: NVIDIA H100/A100 등 (Qwen3-VL-8B 서빙)
 - SGLang v0.5.21 서버: `Qwen/Qwen3-VL-8B-Instruct`, port 8001, `--attention-backend triton --enable-multimodal`
 - (07) strands-decider 서버: `strands-decider serve StrandsAgents/strands-decider-2B-qwen3.5-v1-2610 --port 8002 --device cuda`

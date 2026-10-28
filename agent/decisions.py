@@ -71,9 +71,14 @@ class HaikuDecision:
 class SGLangDecision:
     name = "sglang-qwen3-vl-8b"
 
-    def __init__(self, model: str = "Qwen/Qwen3-VL-8B-Instruct", port: int = 8001):
+    def __init__(self, model: str = "Qwen/Qwen3-VL-8B-Instruct", port: int = 8001,
+                 host: str | None = None):
+        # host 우선순위: 인자 > SGLANG_HOST 환경변수 > localhost
+        # (workshop에서는 SageMaker Studio가 별도 GPU EC2의 서버를 호출)
+        import os
         self.model = model
-        self.url = f"http://localhost:{port}/v1/systemone"
+        host = host or os.environ.get("SGLANG_HOST", "localhost")
+        self.url = f"http://{host}:{port}/v1/systemone"
 
     def decide(self, *, state_text: str, question: str, choices: list[str],
                decision_id: str) -> DecisionResult:
