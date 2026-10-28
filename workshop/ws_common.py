@@ -23,9 +23,11 @@ ROOT = Path(os.environ.get("DMWS_ROOT", Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-# 모델 서버 호스트: SGLANG_HOST 환경변수 > localhost
-# (workshop에서는 SGLang(:8001)과 strands-decider(:8002)가 같은 GPU EC2에서 서빙됨)
+# 모델 서버 호스트: SGLANG_HOST 환경변수 > localhost (SGLang :8001 전용)
+# strands-decider(:8002)는 별도 EC2일 수 있어 STRANDS_HOST를 우선 사용
+# (agent/decisions.py의 SGLangDecision(port=8002)이 자동 처리)
 SERVER_HOST = os.environ.get("SGLANG_HOST", "localhost")
+STRANDS_HOST = os.environ.get("STRANDS_HOST", SERVER_HOST)
 
 from common import BEDROCK_MODEL_IDS, PRICING                      # noqa: E402
 from agent.bedrock_llm import BedrockLLM                           # noqa: E402

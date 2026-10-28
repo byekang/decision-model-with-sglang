@@ -73,10 +73,12 @@ class SGLangDecision:
 
     def __init__(self, model: str = "Qwen/Qwen3-VL-8B-Instruct", port: int = 8001,
                  host: str | None = None):
-        # host 우선순위: 인자 > SGLANG_HOST 환경변수 > localhost
-        # (workshop에서는 SageMaker Studio가 별도 GPU EC2의 서버를 호출)
+        # host 우선순위: 인자 > (8002는 STRANDS_HOST 우선) > SGLANG_HOST > localhost
+        # (workshop에서는 SGLang과 strands-decider가 각각 다른 EC2에서 서빙될 수 있음)
         import os
         self.model = model
+        if host is None and port == 8002:
+            host = os.environ.get("STRANDS_HOST")
         host = host or os.environ.get("SGLANG_HOST", "localhost")
         self.url = f"http://{host}:{port}/v1/systemone"
 
