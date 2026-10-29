@@ -44,6 +44,23 @@ STRANDS_HOST = os.environ.get("STRANDS_HOST", SERVER_HOST)
 
 # 출력/그래프 캡션 언어 ('ko' | 'en')
 LANG = os.environ.get("DMWS_LANG", "ko")
+
+
+# graphviz용 폰트: 시스템에서 한글 렌더링 가능한 폰트를 동적으로 선택
+# (SageMaker notebook 등 Noto CJK가 없는 환경에서 자모 분리 렌더링 방지)
+def _pick_font():
+    import subprocess
+    try:
+        fam = subprocess.run(["fc-match", "-f", "%{family}", ":lang=ko"],
+                             capture_output=True, text=True, timeout=5).stdout.strip()
+        if fam:
+            return fam.split(",")[0]
+    except Exception:
+        pass
+    return "Noto Sans CJK KR"
+
+FONT = _pick_font()
+
 if LANG not in ("ko", "en"):
     LANG = "ko"
 
@@ -440,10 +457,10 @@ def draw_graph(visible=None, highlight=None, new=None, width=None, show_teams=Fa
     highlight = set(highlight or [])
     new = set(new or [])
     g = graphviz.Digraph(format="png")
-    g.attr(rankdir="TB", fontname="Noto Sans CJK KR", splines="spline",
+    g.attr(rankdir="TB", fontname=FONT, splines="spline",
            nodesep="0.3", ranksep="0.4", dpi="110", compound="true")
-    g.attr("node", fontname="Noto Sans CJK KR", fontsize="11")
-    g.attr("edge", fontname="Noto Sans CJK KR", fontsize="9")
+    g.attr("node", fontname=FONT, fontsize="11")
+    g.attr("edge", fontname=FONT, fontsize="9")
     for n in visible:
         label = nodes[n]
         kw = {}
@@ -477,7 +494,7 @@ def draw_graph(visible=None, highlight=None, new=None, width=None, show_teams=Fa
         g.edge(src, dst, **kw)
     if show_teams and "intent_router" in visible:
         with g.subgraph(name="cluster_teams") as c:
-            c.attr(label=ui["team_cluster"], fontname="Noto Sans CJK KR",
+            c.attr(label=ui["team_cluster"], fontname=FONT,
                    fontsize="10", style="dashed", color="#888888")
             for cat, cap in teams.items():
                 kw = dict(shape="box", style="filled", fillcolor="#F6EBD9", fontsize="9")
