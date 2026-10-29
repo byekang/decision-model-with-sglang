@@ -2,7 +2,7 @@
 
 - 작성일: 2026-10-27 (파일명 prefix는 서울 시간(KST, UTC+9) 기준 202610271814, 구버전 202610271757 대체)
 - 구성: **시나리오 A** — 다단계·recursive LangGraph workflow에 한국어로 질의 / **시나리오 B** — 스크린샷 이미지를 읽는 판단 (Qwen3-VL)
-- 실습 형태: **Jupyter notebook 5부작** (`workshop/01~05_*.ipynb`, kernel: `Python (agent venv)`) — 전부 실행 검증 완료(오류 0), 노트북별 `_solution.ipynb`(실행 완료본) 동봉
+- 실습 형태: **Jupyter notebook** — 노트북은 두 언어로 제공: `[KR]_`(한국어) / `[EN]_`(영어) prefix. 5부작+확장 (`workshop/01~05_*.ipynb`, kernel: `Python (agent venv)`) — 전부 실행 검증 완료(오류 0), 노트북별 `_solution.ipynb`(실행 완료본) 동봉
 - 측정 환경: AWS EC2 us-west-2, NVIDIA H100, SGLang v0.5.21 + Qwen3-VL-8B-Instruct (:8001, triton backend) vs Amazon Bedrock Haiku 4.5 (`us.` cross-region profile). 응답 생성은 양쪽 모두 Bedrock Sonnet 4.5
 - 모든 은행/카드/금액/스크린샷은 합성 데이터입니다(가상의 "KB한빛")
 
@@ -47,11 +47,11 @@ jupyter lab workshop/
 
 | 노트북 | 내용 | 실측 (solution 기준) |
 |---|---|---|
-| `01_build_agent.ipynb` | LangGraph step-by-step 구성: State -> 결정 backend 2종 단건 체험 -> 노드 하나씩 정의 -> loop/분기 wiring -> 시험 구동 | 구성 후 1건 e2e 7.3초 (결정 252ms) |
-| `02_scenario1_clarify.ipynb` | 예제 1: 모호한 문의 -> clarification loop. Haiku 실행 -> SGLang 실행 -> 비교 | 결정 6,574 -> 304ms (**21.6x**) |
-| `03_scenario2_retry.ipynb` | 예제 2: 해외송금 미도착 -> tool 오류 -> 재시도 loop | 결정 8,471 -> 331ms (**25.6x**) |
-| `04_scenario3_risk_kyc.ipynb` | 예제 3: 이상거래 flag -> KYC sub-flow + guardrail 과차단 probe 재현 셀 | 결정 6,656 -> 302ms (**22.1x**) |
-| `05_scenario4_image.ipynb` | 예제 4: 승인 알림·문자 스크린샷을 읽는 판단 4종 | p50 합계 3,906 -> 420ms (**9.3x**) |
+| `[KR]_01_build_agent.ipynb` (영문판 `[EN]_01_build_agent.ipynb`) | LangGraph step-by-step 구성: State -> 결정 backend 2종 단건 체험 -> 노드 하나씩 정의 -> loop/분기 wiring -> 시험 구동 | 구성 후 1건 e2e 7.3초 (결정 252ms) |
+| `[KR]_02_scenario1_clarify.ipynb` (영문판 `[EN]_02_scenario1_clarify.ipynb`) | 예제 1: 모호한 문의 -> clarification loop. Haiku 실행 -> SGLang 실행 -> 비교 | 결정 6,574 -> 304ms (**21.6x**) |
+| `[KR]_03_scenario2_retry.ipynb` (영문판 `[EN]_03_scenario2_retry.ipynb`) | 예제 2: 해외송금 미도착 -> tool 오류 -> 재시도 loop | 결정 8,471 -> 331ms (**25.6x**) |
+| `[KR]_04_scenario3_risk_kyc.ipynb` (영문판 `[EN]_04_scenario3_risk_kyc.ipynb`) | 예제 3: 이상거래 flag -> KYC sub-flow + guardrail 과차단 probe 재현 셀 | 결정 6,656 -> 302ms (**22.1x**) |
+| `[KR]_05_scenario4_image.ipynb` (영문판 `[EN]_05_scenario4_image.ipynb`) | 예제 4: 승인 알림·문자 스크린샷을 읽는 판단 4종 | p50 합계 3,906 -> 420ms (**9.3x**) |
 
 각 시나리오 노트북은 `ws_common.run_verbose()`가 그래프 노드 실행을 스트리밍으로 받아 **"STEP n ▶ 노드명 — 역할"** 과 판정 label/confidence/latency, 되묻는 질문·고객 답변·최종 응답을 단계별로 출력합니다 — 느린 Haiku arm에서는 STEP이 하나씩 찍히는 것 자체가 시연 효과입니다.
 
