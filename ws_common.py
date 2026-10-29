@@ -22,8 +22,17 @@ import time
 import urllib.request
 from pathlib import Path
 
-# 프로젝트 루트: DMWS_ROOT 환경변수 > 이 파일 기준 상위 폴더 (repo clone 위치 무관)
-ROOT = Path(os.environ.get("DMWS_ROOT", Path(__file__).resolve().parents[1]))
+# 프로젝트 루트: DMWS_ROOT 환경변수 > agent/ 패키지가 있는 가장 가까운 상위 폴더
+# (repo 루트에 ws_common이 있는 workshop 배포 레이아웃과, workshop/ 하위에 있는
+#  개발 레이아웃을 모두 자동 지원)
+def _find_root():
+    here = Path(__file__).resolve()
+    for p in (here.parent, *here.parents):
+        if (p / "agent").is_dir():
+            return p
+    return here.parents[1]
+
+ROOT = Path(os.environ.get("DMWS_ROOT") or _find_root())
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 

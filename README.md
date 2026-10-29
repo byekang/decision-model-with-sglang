@@ -1,62 +1,32 @@
-# Decision Model with SGLang — 한국어 금융 상담 Agent Workshop
+# Workshop: Decision Layer for a Financial Support Agent / 금융 상담 Agent의 Decision Layer 실습
 
-LangGraph로 만든 한국어 금융 상담 agent의 **판단(decision) 계층**을 여러 backend로 바꿔가며
-속도·비용·품질을 실측 비교하는 hands-on workshop입니다.
+**EN** — Build a Korean banking-support agent with LangGraph, then swap its decision layer across several backends and measure speed, cost and quality. Notebooks come in two languages with a filename prefix: **`[EN]_`** (English) and **`[KR]_`** (Korean). Each notebook also ships an executed reference copy `*_solution.ipynb`. An SGLang server (:8001, Qwen3-VL-8B) must be running; `[EN]_07`/`[KR]_07` additionally use strands-decider on :8002. `[EN]_` notebooks use English customer utterances end-to-end; `[KR]_` notebooks use Korean. The Korean-capability demonstration lives in the [KR] track and the 160-conversation Korean bench (see Measured results).
 
-- 판단 backend: Amazon Bedrock Haiku 4.5 / **SGLang `/v1/systemone` + Qwen3-VL-8B** /
-  strands-decider 2B / Laya 322M (+ 참고: Bedrock Intelligent Prompt Routing)
-- 응답 생성: Amazon Bedrock Sonnet 4.5 (모든 arm 공통)
-- workflow: 결정 노드 8종(D1-D8) + recursive loop 2개(되묻기, tool 재시도) + KYC sub-flow
+**KR** — 한국어 금융 상담 agent를 LangGraph로 직접 조립하고, 판단(decision) 계층을 여러 backend로 바꿔가며 속도·비용·품질을 실측하는 실습입니다. 노트북은 파일명 prefix로 두 언어를 제공합니다: **`[KR]_`**(한국어), **`[EN]_`**(영어). 각 노트북에는 실행 완료본 `*_solution.ipynb`가 함께 있습니다. SGLang 서버(:8001, Qwen3-VL-8B)가 떠 있어야 하며, 07은 strands-decider(:8002)도 사용합니다. `[EN]_` 노트북은 고객 발화까지 영어, `[KR]_` 노트북은 한국어입니다 — 한국어 능력 검증은 [KR] 트랙과 한국어 160건 bench가 담당합니다.
 
-## 구성 (workshop/)
+## Contents / 대목차
 
-| 폴더 | 내용 |
-|---|---|
-| `10_agent_foundation/` | 01 — LangGraph step-by-step 조립 (단계별 그래프 시각화, 금융 업무 관점 해설) |
-| `20_text_scenarios/` | 02-04 — 한국어 상담 3종: 되묻기 loop / tool 재시도 loop / KYC sub-flow. Haiku vs SGLang 비교 |
-| `30_image_scenarios/` | 05 — 승인 알림·피싱 문자 스크린샷 판독 (Qwen3-VL) |
-| `40_other_deciders/` | 06 Bedrock Intelligent Prompt Routing, 07 strands-decider, 08 Laya |
+| Folder | Notebooks (EN / KR) | Topic |
+|---|---|---|
+| `10_agent_foundation/` | `[EN]_01_build_agent.ipynb` / `[KR]_01_build_agent.ipynb` | Build the agent step by step with LangGraph; staged graph visualization; one standalone decision on Haiku vs SGLang / LangGraph로 agent를 한 조각씩 조립, 단계별 그래프 시각화 |
+| `20_text_scenarios/` | `[EN]_02_scenario1_clarify` / `[KR]_02...` | Vague inquiry -> clarification loop / 모호한 문의 -> 되묻기 loop |
+| | `[EN]_03_scenario2_retry` / `[KR]_03...` | Tool system error -> retry loop / tool 오류 -> 대체 tool 재시도 loop |
+| | `[EN]_04_scenario3_risk_kyc` / `[KR]_04...` | Fraud flag -> KYC sub-flow + guardrail over-blocking on both backends / 이상거래 flag -> KYC + guardrail 과차단 체험 |
+| `30_image_scenarios/` | `[EN]_05_scenario4_image` / `[KR]_05...` | The model reads approval-alert / phishing-SMS screenshots (EN uses `[EN]_*.png` fixtures, KR uses `[KR]_*.png`) / 스크린샷 판독 |
+| `40_other_deciders/` | `[EN]_06_bedrock_intelligent_routing` / `[KR]_06...` | Bedrock Intelligent Prompt Routing (Nova live lab, custom router, $1/1,000 req) |
+| | `[EN]_07_strands_decider` / `[KR]_07...` | Strands team's dedicated 2B decision model (:8002, same `/v1/systemone` wire format) |
+| | `[EN]_08_laya` / `[KR]_08...` | Laya — open-source multilingual System 1 engine (322M), native `Router` + 20-line adapter |
 
-각 노트북에는 실행 완료본 `*_solution.ipynb`(기대 출력 포함)이 함께 있습니다.
-대목차와 핵심 실측 수치는 `workshop/README.md`, 진행 가이드는 `report/guide/202610271814_workshop_guide.md`(+pdf) 참조.
+Scenario notebooks follow the same shape: show the scenario's path on the full graph -> run with Haiku (STEP-by-STEP output) -> run with SGLang -> markdown comparison table. / 시나리오 노트북 공통 구성: 전체 그래프에서 경로 표시 -> Haiku 실행 -> SGLang 실행 -> 비교표.
 
-## 핵심 실측 결과 요약
+> Perspective: the **decision layer** (SGLang in these labs) *removes* the decision LLM call; **Intelligent Prompt Routing** picks *which model* a generation call goes to — complements, not substitutes. / **decision layer**는 판단용 LLM 호출 자체를 제거하고, **IPR**은 생성 호출의 모델을 골라줍니다 — 대체재가 아니라 보완재.
 
-- 결정 latency 합계(상담 1건): Haiku 약 5.2-8.5초 -> SGLang 약 0.28-0.33초 (**약 19-26배**)
-- 이미지 판단(한국어 스크린샷): Qwen3-VL 94-117ms vs Haiku 0.85-1.7초
-- 한국어 판단 품질(160건 D1/D2): SGLang 8B 0.913/0.629 > strands-decider 2B 0.613/0.500 > Laya 322M 0.419/0.357
-- guardrail(D1) 주의: 소형 decision model은 한국어 피해 신고 표현을 과차단(conf 1.0 포화) — 안전 판단은 상위 모델 유지 권고
+## Measured results / 핵심 실측
 
-## 실행 환경 요구사항
+**Korean decision quality** (160 conversations, D1/D2, the companion decider-quality bench (source project)):
+SGLang Qwen3-VL-8B **0.913/0.629** > strands-decider 2B 0.613/0.500 > Laya multilingual 0.419/0.357 — model capacity dominated the quality ceiling over language specialization; small dedicated models presume fine-tuning (Laya official: 0.362 -> 0.766 tuned). Image decisions: Qwen3-VL only. / 언어 특화보다 **모델 용량이 품질 상한을 지배**, 소형 전용 모델은 fine-tuning 전제. 이미지 판단은 Qwen3-VL만 가능.
 
-이 저장소는 아래 환경을 전제로 작성되었습니다 (경로가 코드에 포함되어 있음):
+## Shared code / 공용 코드
 
-- 프로젝트 루트: clone 위치 무관 (`workshop/ws_common.py`가 자기 위치 기준으로 자동 탐지, 필요 시 `DMWS_ROOT` 환경변수로 지정)
-- 모델 서버 주소: 기본 `localhost`, 원격 서버 사용 시 `SGLANG_HOST` 환경변수에 서버 IP 지정 (SGLang :8001, strands-decider :8002 공통)
-- GPU: NVIDIA H100/A100 등 (Qwen3-VL-8B 서빙)
-- SGLang v0.5.21 서버: `Qwen/Qwen3-VL-8B-Instruct`, port 8001, `--attention-backend triton --enable-multimodal`
-- (07) strands-decider 서버: `strands-decider serve StrandsAgents/strands-decider-2B-qwen3.5-v1-2610 --port 8002 --device cuda`
-- (08) `pip install laya` (Jupyter kernel venv에)
-- AWS 자격 증명: us-west-2 Bedrock(Haiku 4.5/Sonnet 4.5 `us.` inference profile) 호출 권한
-- Python 3.12 venv에 `anthropic`, `langgraph`, `boto3`, `graphviz`(+ 시스템 `dot`), `ipykernel`
-- 전체 노트북 1회 실행 비용: 약 $1-2 (Bedrock)
+- `ws_common.py` : graph building/drawing (`draw_graph`, `draw_build_stage`), streamed STEP output (`run_verbose`), comparison tables (`compare`), image-decision helpers. Language of helper output and graph captions follows **`DMWS_LANG`** (`ko` default, `en`) — the `[EN]_` notebooks set it in their first cell. / helper 출력·그래프 캡션 언어는 `DMWS_LANG` 환경변수(`ko` 기본, `en`)를 따르며 `[EN]_` 노트북 첫 셀에서 설정됩니다.
 
-```bash
-# 서버 기동 예 (경로/venv는 환경에 맞게)
-python -m sglang.launch_server --model-path Qwen/Qwen3-VL-8B-Instruct \
-  --port 8001 --mem-fraction-static 0.75 --attention-backend triton --enable-multimodal
-
-jupyter lab workshop/
-```
-
-## 저장소 내용물
-
-- `agent/` — LangGraph workflow(graph_v2.py), 결정 backend 클라이언트(decisions.py), prompt/tool 정의
-- `workshop/` — 노트북 8종(+solution), 공용 helper `ws_common.py`(단계별 STEP 출력, 한글 그래프 시각화, 비교표)
-- `scripts/` — 시연 이미지 생성(92), 판단 반복 측정(93), workflow 데모(94), backend 품질 벤치(95), 공용 유틸(common.py)
-- `data/` — 합성 스크린샷 3종, 한국어 160건 평가 데이터(agent_convs_v2ko.jsonl, Banking77 기반 번역)
-- `results/summary/` — 실측 결과 JSON 3종
-- `report/` — workflow 다이어그램, 진행 가이드(md/pdf)
-
-모든 은행·카드·금액·스크린샷은 합성 데이터입니다(가상의 "KB한빛").
-Banking77 데이터셋(원 출처: PolyAI, CC-BY-4.0)을 번역·가공해 평가에 사용했습니다.
