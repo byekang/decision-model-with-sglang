@@ -26,6 +26,10 @@ Scenario notebooks follow the same shape: show the scenario's path on the full g
 **Korean decision quality** (160 conversations, D1/D2, the companion decider-quality bench (source project)):
 SGLang Qwen3-VL-8B **0.913/0.629** > strands-decider 2B 0.613/0.500 > Laya multilingual 0.419/0.357 — model capacity dominated the quality ceiling over language specialization; small dedicated models presume fine-tuning (Laya official: 0.362 -> 0.766 tuned). Image decisions: Qwen3-VL only. / 언어 특화보다 **모델 용량이 품질 상한을 지배**, 소형 전용 모델은 fine-tuning 전제. 이미지 판단은 Qwen3-VL만 가능.
 
+## Kernel dependencies / 커널 의존성
+
+Install with `pip install -r requirements.txt`. **anthropic is version-pinned** — newer SDKs send an API version header that Bedrock rejects (400 "Invalid API version"). / `requirements.txt`의 고정 버전을 사용하세요. 최신 anthropic SDK는 Bedrock이 거부하는 API version 헤더를 보냅니다.
+
 ## Shared code / 공용 코드
 
 - `ws_common.py` : graph building/drawing (`draw_graph`, `draw_build_stage`), streamed STEP output (`run_verbose`), comparison tables (`compare`), image-decision helpers. Language of helper output and graph captions follows **`DMWS_LANG`** (`ko` default, `en`) — the `[EN]_` notebooks set it in their first cell. / helper 출력·그래프 캡션 언어는 `DMWS_LANG` 환경변수(`ko` 기본, `en`)를 따르며 `[EN]_` 노트북 첫 셀에서 설정됩니다.

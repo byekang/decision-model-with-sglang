@@ -1,0 +1,12 @@
+# Known-good kernel dependencies for the workshop notebooks.
+# The latest anthropic SDK can send an API version header that Bedrock
+# rejects ("Invalid API version" 400) - keep anthropic pinned.
+anthropic==1.8.0
+langgraph==1.2.18
+boto3
+graphviz
+pillow
+ipykernel
+# notebook 08 (Laya) only:
+# torch (CPU wheel: pip install torch --index-url https://download.pytorch.org/whl/cpu)
+# laya
