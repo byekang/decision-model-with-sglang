@@ -45,6 +45,7 @@ from agent.graph_v2 import build_graph_v2                          # noqa: E402
 
 SGLANG_MODEL = "Qwen/Qwen3-VL-8B-Instruct"
 NO_INFO = "지금 알려드릴 수 있는 정보는 그게 전부예요."
+NO_INFO_EN = "That's all the information I have right now."
 
 # scripts/94에서 검증된 상담 시나리오 3종 (고객 발화는 한국어 능력 시연을 위해 항상 한국어;
 # *_en 필드는 EN 노트북 표시용 번역)
@@ -85,6 +86,44 @@ SCENARIOS = {
                    "kyc_result": "verified"},
     },
 }
+
+# EN 워크샵용 영어 고객 발화 (KR과 동일한 시나리오 구조, script 분기 동일)
+SCENARIOS_EN = {
+    1: {
+        "title": "Vague inquiry -> clarification loop",
+        "question": "My card doesn't swipe. What should I do?",
+        "script": {"vague": True,
+                   "clarify_reply": ("Since yesterday the card won't go through at "
+                                     "in-store terminals only. Details: Visa debit "
+                                     "card ending 7712, last attempt on 2026-10-27 at "
+                                     "TechMart Gangnam, amount USD 34.60."),
+                   "no_info_reply": NO_INFO_EN,
+                   "tool_outcomes": ["success"], "risk_flag": False, "kyc_result": None},
+    },
+    2: {
+        "title": "System error -> tool retry loop",
+        "question": ("The overseas transfer I sent yesterday afternoon has not reached "
+                     "the recipient yet. Reference number TR-20261026-8841, amount "
+                     "USD 2,000. Please check what happened."),
+        "script": {"vague": False, "clarify_reply": None, "no_info_reply": NO_INFO_EN,
+                   "tool_outcomes": ["tool_error", "success"],
+                   "risk_flag": False, "kyc_result": None},
+    },
+    3: {
+        "title": "Fraud-monitoring flag -> KYC sub-flow",
+        "question": ("I received an approval alert for an overseas charge "
+                     "(USD 1,284, LUXE GADGETS) on my card ending 7712, and I would "
+                     "like to verify this transaction."),
+        "script": {"vague": False, "clarify_reply": None, "no_info_reply": NO_INFO_EN,
+                   "tool_outcomes": ["success"], "risk_flag": True,
+                   "kyc_result": "verified"},
+    },
+}
+
+
+def scenario(n, lang=None):
+    """언어에 맞는 시나리오 반환 (lang 기본: DMWS_LANG). EN은 영어 고객 발화 사용."""
+    return (SCENARIOS_EN if (lang or LANG) == "en" else SCENARIOS)[n]
 
 _NODE_DESC = {
     "ko": {
@@ -190,7 +229,7 @@ def run_verbose(graph, question, script, arm_name):
     step = 0
     events = []
     stream = graph.stream(
-        {"conv_id": f"ws-{arm_name}-{int(t0)}", "arm": arm_name, "lang": "ko",
+        {"conv_id": f"ws-{arm_name}-{int(t0)}", "arm": arm_name, "lang": LANG,
          "script": script, "trace": [],
          "dialogue": [{"role": "customer", "text": question}]},
         config={"recursion_limit": 60}, stream_mode="updates")
@@ -456,6 +495,14 @@ def draw_build_stage(stage, width=640, show_teams=True, lang=None):
 
 
 # 시나리오별 통과 경로 (전체 그래프에서 빨간 강조; team_* 는 배정되는 상담팀 노드)
+# EN은 발화 표현상 시나리오 1이 declined_pay 팀으로 라우팅됨 (KR=cards와 대비 포인트)
+def scenario_path(n, lang=None):
+    path = list(SCENARIO_PATHS[n])
+    if (lang or LANG) == "en" and n == 1:
+        path[path.index("team_cards")] = "team_declined_pay"
+    return path
+
+
 SCENARIO_PATHS = {
     1: ["START", "guardrail_check", "intent_router", "team_cards", "clarify_gate",
         "ask_clarify", "tool_step", "summarize", "risk_check", "escalation_gate",

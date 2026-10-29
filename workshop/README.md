@@ -1,8 +1,8 @@
 # Workshop: Decision Layer for a Financial Support Agent / 금융 상담 Agent의 Decision Layer 실습
 
-**EN** — Build a Korean banking-support agent with LangGraph, then swap its decision layer across several backends and measure speed, cost and quality. Notebooks come in two languages with a filename prefix: **`[EN]_`** (English) and **`[KR]_`** (Korean). Each notebook also ships an executed reference copy `*_solution.ipynb`. An SGLang server (:8001, Qwen3-VL-8B) must be running; `[EN]_07`/`[KR]_07` additionally use strands-decider on :8002. Customer utterances stay Korean in both language versions on purpose — Korean handling is part of what the workshop demonstrates.
+**EN** — Build a Korean banking-support agent with LangGraph, then swap its decision layer across several backends and measure speed, cost and quality. Notebooks come in two languages with a filename prefix: **`[EN]_`** (English) and **`[KR]_`** (Korean). Each notebook also ships an executed reference copy `*_solution.ipynb`. An SGLang server (:8001, Qwen3-VL-8B) must be running; `[EN]_07`/`[KR]_07` additionally use strands-decider on :8002. `[EN]_` notebooks use English customer utterances end-to-end; `[KR]_` notebooks use Korean. The Korean-capability demonstration lives in the [KR] track and the 160-conversation Korean bench (see Measured results).
 
-**KR** — 한국어 금융 상담 agent를 LangGraph로 직접 조립하고, 판단(decision) 계층을 여러 backend로 바꿔가며 속도·비용·품질을 실측하는 실습입니다. 노트북은 파일명 prefix로 두 언어를 제공합니다: **`[KR]_`**(한국어), **`[EN]_`**(영어). 각 노트북에는 실행 완료본 `*_solution.ipynb`가 함께 있습니다. SGLang 서버(:8001, Qwen3-VL-8B)가 떠 있어야 하며, 07은 strands-decider(:8002)도 사용합니다.
+**KR** — 한국어 금융 상담 agent를 LangGraph로 직접 조립하고, 판단(decision) 계층을 여러 backend로 바꿔가며 속도·비용·품질을 실측하는 실습입니다. 노트북은 파일명 prefix로 두 언어를 제공합니다: **`[KR]_`**(한국어), **`[EN]_`**(영어). 각 노트북에는 실행 완료본 `*_solution.ipynb`가 함께 있습니다. SGLang 서버(:8001, Qwen3-VL-8B)가 떠 있어야 하며, 07은 strands-decider(:8002)도 사용합니다. `[EN]_` 노트북은 고객 발화까지 영어, `[KR]_` 노트북은 한국어입니다 — 한국어 능력 검증은 [KR] 트랙과 한국어 160건 bench가 담당합니다.
 
 ## Contents / 대목차
 
