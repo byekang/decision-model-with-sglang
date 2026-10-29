@@ -60,5 +60,6 @@ def run_tool_v2(tool_name: str, conv_id: str, script: dict, attempt: int) -> dic
 
 
 def run_kyc(conv_id: str, script: dict) -> dict:
-    key = script.get("kyc_result", "verified")
+    # script에 KYC 결과가 없는데(D7 오판 등) 이 노드에 도달할 수 있음 -> verified로 통과
+    key = script.get("kyc_result") or "verified"
     return {"outcome_key": key, **_fmt(_KYC[key], conv_id)}
