@@ -37,7 +37,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 # 모델 서버 호스트: SGLANG_HOST 환경변수 > localhost (SGLang :8001 전용)
-# strands-decider(:8002)는 별도 EC2일 수 있어 STRANDS_HOST를 우선 사용
+# strands-decider(:8002)는 별도 EC2(CPU)에서 서빙되므로 STRANDS_HOST를 우선 사용
 # (agent/decisions.py의 SGLangDecision(port=8002)이 자동 처리)
 SERVER_HOST = os.environ.get("SGLANG_HOST", "localhost")
 STRANDS_HOST = os.environ.get("STRANDS_HOST", SERVER_HOST)
