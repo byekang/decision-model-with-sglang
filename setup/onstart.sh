@@ -17,6 +17,16 @@ exec >> $LOGS/onstart.log 2>&1
 
 echo "===== onstart $(date -u +%FT%TZ) ====="
 
+# CloudFormation WaitCondition 신호: 스택이 "SGLang 서빙 준비 완료"까지 기다리게
+# 한다. SGLANG_WAIT_URL(presigned URL)은 LCC가 주입하며, 미설정이면 no-op.
+# 재시작 시 이미 완료된 WaitCondition으로의 신호는 무해하게 무시된다.
+signal_cfn() {
+  [ -n "$SGLANG_WAIT_URL" ] || return 0
+  curl -s -X PUT -H 'Content-Type:' --data-binary \
+    "{\"Status\":\"$1\",\"Reason\":\"$2\",\"UniqueId\":\"sglang\",\"Data\":\"$1\"}" \
+    "$SGLANG_WAIT_URL" || true
+}
+
 # graphviz + Korean fonts (graph captions; prevents jamo-decomposed rendering)
 yum install -y -q graphviz || true
 yum install -y -q google-noto-sans-cjk-ttc-fonts || yum install -y -q google-noto-sans-cjk-fonts || true
@@ -36,7 +46,11 @@ nohup su ec2-user -c "$PY/pip install -q torch --index-url https://download.pyto
 
 # wait for the one-time bootstrap (first boot: venv/model still downloading)
 for i in $(seq 1 240); do [ -f $WORK/.dmws_bootstrap_done ] && break; sleep 15; done
-[ -f $WORK/.dmws_bootstrap_done ] || { echo ONSTART_BOOTSTRAP_TIMEOUT; exit 1; }
+[ -f $WORK/.dmws_bootstrap_done ] || {
+  echo ONSTART_BOOTSTRAP_TIMEOUT
+  signal_cfn FAILURE "bootstrap (venv/model build) did not finish"
+  exit 1
+}
 
 # SGLang on the GPU (:8001). PATH must include the venv bin so the JIT kernel
 # compiler finds ninja — without it the server crashes during CUDA graph capture.
@@ -47,5 +61,11 @@ su ec2-user -c "cd $WORK && export PATH=$WORK/venvs/sglang/bin:\$PATH && HF_HOME
   --attention-backend triton --enable-multimodal > $LOGS/sglang.log 2>&1 &"
 
 for i in $(seq 1 120); do curl -sf http://localhost:8001/health >/dev/null && break; sleep 10; done
-curl -sf http://localhost:8001/health >/dev/null && echo ONSTART_SGLANG_OK || echo ONSTART_SGLANG_FAIL
+if curl -sf http://localhost:8001/health >/dev/null; then
+  echo ONSTART_SGLANG_OK
+  signal_cfn SUCCESS "sglang healthy"
+else
+  echo ONSTART_SGLANG_FAIL
+  signal_cfn FAILURE "sglang did not become healthy"
+fi
 echo "===== onstart done $(date -u +%FT%TZ) ====="
